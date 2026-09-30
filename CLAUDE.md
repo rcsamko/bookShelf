@@ -19,6 +19,16 @@ It was originally built and iterated on as a single published HTML artifact in a
 - The only external resources are two Google Fonts (loaded via `<link>`): `Source Serif 4` and `Courier Prime`.
 - All app state (books, current sort, reversed flag, active/edited book) lives in plain JS variables in memory. **Nothing persists across a page reload** — this is a known, intentional gap (see "Likely next steps" below).
 
+## Branch flow
+
+Three long-lived branches: `dev` → `test` → `prod`.
+
+- **`dev`** — active development. All new work is built and iterated here (feature branches, if used, merge into `dev`).
+- **`test`** — promoted from `dev` for verification before release. No direct feature work; only fixes needed to pass verification (make them in `dev` and re-promote where possible).
+- **`prod`** — released, stable version. Only updated by promoting from `test`.
+
+Promotion is one-directional: merge `dev` into `test`, then `test` into `prod`. Never commit straight to `test` or `prod`, and never promote skipping a stage.
+
 ## Tech stack & constraints (please preserve unless asked to change)
 
 - **Vanilla HTML/CSS/JS only.** No React, no build tooling, no npm dependencies. This was a deliberate choice to keep it a single portable file.
