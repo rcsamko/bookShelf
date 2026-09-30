@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The 24-Inch Shelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wood-dark: #2E2016;
+    --wood-mid: #6B4530;
+    --wood-light: #8B6239;
+    --wood-edge: #1C130C;
+    --paper: #F1E9D8;
+    --ink: #241C14;
+    --ink-soft: #5A4C3B;
+    --brass: #A9813F;
+    --brass-light: #D8BA7C;
+    --card-bg: #FBF6EA;
+    --card-line: #C9BB9E;
+    --rule: rgba(36,28,20,0.18);
+    --shadow: rgba(20,13,7,0.45);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --wood-dark: #17100A;
+      --wood-mid: #402A1B;
+      --wood-light: #57392A;
+      --wood-edge: #0D0805;
+      --paper: #1B1712;
+      --ink: #ECE3D2;
+      --ink-soft: #B7A98F;
+      --card-bg: #241E16;
+      --card-line: #4A4133;
+      --rule: rgba(236,227,210,0.16);
+      --shadow: rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --wood-dark: #17100A;
+    --wood-mid: #402A1B;
+    --wood-light: #57392A;
+    --wood-edge: #0D0805;
+    --paper: #1B1712;
+    --ink: #ECE3D2;
+    --ink-soft: #B7A98F;
+    --card-bg: #241E16;
+    --card-line: #4A4133;
+    --rule: rgba(236,227,210,0.16);
+    --shadow: rgba(0,0,0,0.6);
+  }
+  html, body {
+    height: 100%;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 18px 64px;
+  }
+  header.top {
+    margin-bottom: 22px;
+  }
+  .eyebrow-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink-soft);
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    margin-bottom: 6px;
+  }
+  .eyebrow-line::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--brass);
+    display: inline-block;
+  }
+  h1 {
+    font-size: clamp(28px, 7vw, 38px);
+    line-height: 1.08;
+    margin: 0 0 8px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .stats {
+    display: flex;
+    gap: 22px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    font-family: 'Courier Prime', monospace;
+  }
+  .stat .n {
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--ink);
+    display: block;
+    line-height: 1.1;
+  }
+  .stat .l {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+
+  /* ---- controls ---- */
+  .controls {
+    margin: 26px 0 20px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 0;
+  }
+  .controls .row-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 9px;
+  }
+  .sort-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  button.sortbtn {
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    padding: 7px 13px;
+    border-radius: 3px;
+    border: 1px solid var(--card-line);
+    background: var(--card-bg);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  button.sortbtn:hover { border-color: var(--brass); }
+  button.sortbtn[aria-pressed="true"] {
+    background: var(--wood-dark);
+    color: var(--paper);
+    border-color: var(--wood-dark);
+  }
+  button.sortbtn:focus-visible, .reversebtn:focus-visible, .spine:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
+  }
+  .reversebtn {
+    margin-left: auto;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    background: none;
+    border: 1px dashed var(--card-line);
+    color: var(--ink-soft);
+    padding: 7px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .reversebtn:hover { color: var(--ink); border-color: var(--brass); }
+
+  /* ---- shelf room ---- */
+  .shelfroom {
+    margin: 6px 0 10px;
+  }
+  .shelf-unit {
+    margin-bottom: 26px;
+  }
+  .shelf-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Courier Prime', monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+    padding: 0 2px;
+  }
+  .shelf-box {
+    position: relative;
+    padding: 0 6px 16px;
+  }
+  .shelf-books {
+    display: flex;
+    align-items: flex-end;
+    gap: 0px;
+    min-height: 60px;
+    position: relative;
+    z-index: 2;
+  }
+  .spine {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 6px;
+    border: none;
+    cursor: pointer;
+    writing-mode: vertical-rl;
+    color: var(--paper-text, #F1E9D8);
+    box-shadow: inset -2px 0 3px rgba(0,0,0,0.25), inset 2px 0 0 rgba(255,255,255,0.06);
+    border-right: 1px solid rgba(0,0,0,0.35);
+    flex-shrink: 0;
+    transition: transform 0.12s ease;
+  }
+  .spine:hover, .spine.active { transform: translateY(-5px); }
+  .spine .label {
+    transform: rotate(180deg);
+    font-size: 10.5px;
+    line-height: 1.15;
+    font-weight: 600;
+    max-height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    font-family: 'Source Serif 4', serif;
+  }
+  .gap-slot {
+    flex-shrink: 0;
+    align-self: flex-end;
+    height: 30px;
+    border: 1px dashed rgba(36,28,20,0.35);
+    border-bottom: none;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    font-family: 'Courier Prime', monospace;
+    font-size: 9.5px;
+    color: var(--ink-soft);
+    padding-top: 3px;
+  }
+  .plank {
+    height: 16px;
+    background: linear-gradient(180deg, var(--wood-light) 0%, var(--wood-mid) 45%, var(--wood-dark) 100%);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 6px 10px -4px var(--shadow), inset 0 -3px 0 var(--wood-edge);
+    position: relative;
+    z-index: 1;
+  }
+  .plank::before, .plank::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--brass-light), var(--brass) 70%);
+  }
+  .plank::before { left: 2px; }
+  .plank::after { right: 2px; }
+
+  /* ---- legend ---- */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin: 18px 0 8px;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* ---- detail panel ---- */
+  .detail {
+    margin: 4px 0 6px;
+    padding: 16px 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-line);
+    border-left: 4px solid var(--brass);
+    border-radius: 2px;
+    display: none;
+  }
+  .detail.show { display: block; }
+  .detail h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+  }
+  .detail .by { color: var(--ink-soft); font-size: 13.5px; margin-bottom: 10px; }
+  .detail dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 12px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    margin: 0;
+  }
+  .detail dt { color: var(--ink-soft); }
+  .detail dd { margin: 0; }
+  .detail .close {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .edit-setting {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--card-line);
+  }
+  .editlabel {
+    display: block;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    margin: 8px 0 3px;
+  }
+  .editlabel:first-child { margin-top: 0; }
+  .detail input[type="number"],
+  .detail input[type="text"] {
+    width: 100%;
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    padding: 7px 9px;
+    border: 1px solid var(--card-line);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .detail input:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 1px;
+  }
+  .edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  button.savebtn {
+    font-family: 'Source Serif 4', serif;
+    font-size: 13.5px;
+    padding: 7px 14px;
+    border-radius: 3px;
+    border: 1px solid var(--wood-dark);
+    background: var(--wood-dark);
+    color: var(--paper);
+    cursor: pointer;
+  }
+  button.savebtn:hover { background: var(--wood-mid); border-color: var(--wood-mid); }
+  .savehint {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11.5px;
+    color: var(--brass);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .savehint.show { opacity: 1; }
+  .fieldnote {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 10px 0 0;
+  }
+
+  /* ---- catalog ---- */
+  .catalog { margin-top: 34px; }
+  .catalog h2 {
+    font-size: 20px;
+    margin: 0 0 4px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 10px;
+  }
+  .catalog .sub {
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin: 8px 0 16px;
+  }
+  .group-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    margin: 20px 0 8px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--card-line);
+  }
+  .group-label:first-child { border-top: none; margin-top: 0; }
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  @media (min-width: 480px) {
+    .cards { grid-template-columns: 1fr 1fr; }
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-line);
+    border-radius: 2px;
+    padding: 12px 13px 11px;
+    position: relative;
+  }
+  .card .accession {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+  }
+  .card h4 {
+    margin: 0 14px 2px 0;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+  .card .author {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .card hr {
+    border: none;
+    border-top: 1px dashed var(--card-line);
+    margin: 8px 0;
+  }
+  .card .meta {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3px 8px;
+  }
+  .card .meta b { color: var(--ink); font-weight: 700; }
+  .genre-tag {
+    display: inline-block;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: #F1E9D8;
+    padding: 1px 6px;
+    border-radius: 2px;
+    margin-top: 8px;
+  }
+
+  footer.note {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="top">
+    <div class="eyebrow-line">CARD CATALOG · SHELF LAYOUT TOOL</div>
+    <h1>The 24-Inch Shelf</h1>
+    <p class="lede">Twenty-five books — novels, memoirs, and narrative nonfiction — from the last hundred years, measured spine to spine. Choose an order below and watch them settle onto a real 24-inch shelf, row by row.</p>
+    <div class="stats">
+      <div class="stat"><span class="n" id="statBooks">25</span><span class="l">books</span></div>
+      <div class="stat"><span class="n" id="statShelves">–</span><span class="l">shelves needed</span></div>
+      <div class="stat"><span class="n" id="statInches">–</span><span class="l">total inches of spine</span></div>
+    </div>
+  </header>
+
+  <section class="controls">
+    <div class="row-label">ARRANGE BY</div>
+    <div class="sort-row" id="sortRow"></div>
+  </section>
+
+  <section class="shelfroom" id="shelfRoom" aria-live="polite"></section>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="detail" id="detail">
+    <button class="close" id="detailClose">close ✕</button>
+    <h3 id="dTitle"></h3>
+    <div class="by" id="dAuthor"></div>
+    <dl>
+      <dt>Published</dt><dd id="dPub"></dd>
+      <dt>Genre</dt><dd id="dGenre"></dd>
+      <dt>Pages</dt><dd id="dPages"></dd>
+      <dt>Thickness</dt><dd id="dThick"></dd>
+    </dl>
+    <div class="edit-setting">
+      <label class="editlabel" for="dSettingYear">Story set — year (for sorting)</label>
+      <input type="number" id="dSettingYear" placeholder="e.g. 1922">
+      <label class="editlabel" for="dSettingLabel">Story set — description (shown on the card)</label>
+      <input type="text" id="dSettingLabel" placeholder="e.g. 1850s–1920s, or Third Age (Middle-earth)">
+      <div class="edit-actions">
+        <button class="savebtn" id="dSave">Save</button>
+        <span class="savehint" id="dSaveHint">saved</span>
+      </div>
+      <p class="fieldnote">Leave the year blank when a book has no single setting — an invented world, or a nonfiction book spanning centuries — and it will group with the other undated titles when sorted by story setting.</p>
+    </div>
+  </div>
+
+  <section class="catalog">
+    <h2>Full Catalog</h2>
+    <p class="sub">Same 25 titles, same order as the shelf above, laid out as reference cards.</p>
+    <div class="cards" id="cardsGrid"></div>
+  </section>
+
+  <footer class="note">
+    Thicknesses are estimated from typical page counts and edition trim sizes (roughly 460 pages per inch of paper, plus cover allowance for hardcovers) — a specific printing on your own shelf may run thinner or thicker. "Story set" is the period a book's narrative covers: for novels and memoirs that's the events on the page; for nonfiction like a history or a biography, it's the era the book focuses on. A few titles — invented worlds, or nonfiction spanning centuries — don't have a single year and are grouped separately when arranged by setting. Tap any book to edit its setting year and description yourself.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const SHELF_WIDTH_IN = 24;
+
+  const GENRE_COLORS = {
+    "Classic Fiction": "#7A3B2E",
+    "Dystopian": "#45566B",
+    "Fantasy": "#3F5B3D",
+    "Historical Fiction": "#A9782F",
+    "Magical Realism": "#6B3F63",
+    "Thriller": "#3A3A3A",
+    "Post-Apocalyptic": "#8C4A2F",
+    "Sci-Fi": "#2C3E63",
+    "Memoir": "#6B4A34",
+    "History": "#4A6FA5",
+    "True Crime": "#5B1F2B",
+    "Biography": "#6E5B3E",
+    "Science": "#3E6B5C"
+  };
+
+  const books = [
+    { id:1, title:"The Great Gatsby", author:"F. Scott Fitzgerald", pubYear:1925, pages:180, thickness:0.45, height:7.9, genre:"Classic Fiction", settingYear:1922, settingLabel:"1922" },
+    { id:2, title:"To Kill a Mockingbird", author:"Harper Lee", pubYear:1960, pages:281, thickness:0.65, height:7.9, genre:"Classic Fiction", settingYear:1934, settingLabel:"1933–1935" },
+    { id:3, title:"1984", author:"George Orwell", pubYear:1949, pages:328, thickness:0.75, height:7.9, genre:"Dystopian", settingYear:1984, settingLabel:"1984" },
+    { id:4, title:"The Catcher in the Rye", author:"J.D. Salinger", pubYear:1951, pages:277, thickness:0.65, height:7.9, genre:"Classic Fiction", settingYear:1949, settingLabel:"1949–1950" },
+    { id:6, title:"The Hobbit", author:"J.R.R. Tolkien", pubYear:1937, pages:310, thickness:0.9, height:9.3, genre:"Fantasy", settingYear:null, settingLabel:"Third Age (Middle-earth)" },
+    { id:7, title:"The Lord of the Rings", author:"J.R.R. Tolkien", pubYear:1954, pages:1178, thickness:2.9, height:9.8, genre:"Fantasy", settingYear:null, settingLabel:"Third Age (Middle-earth)" },
+    { id:8, title:"One Hundred Years of Solitude", author:"Gabriel García Márquez", pubYear:1967, pages:417, thickness:0.95, height:7.9, genre:"Magical Realism", settingYear:1880, settingLabel:"1850s–1920s" },
+    { id:9, title:"Beloved", author:"Toni Morrison", pubYear:1987, pages:324, thickness:0.75, height:7.9, genre:"Historical Fiction", settingYear:1873, settingLabel:"1873" },
+    { id:10, title:"The Grapes of Wrath", author:"John Steinbeck", pubYear:1939, pages:464, thickness:1.05, height:7.9, genre:"Classic Fiction", settingYear:1938, settingLabel:"1930s" },
+    { id:11, title:"Fahrenheit 451", author:"Ray Bradbury", pubYear:1953, pages:256, thickness:0.6, height:7.9, genre:"Dystopian", settingYear:2049, settingLabel:"~2049, unspecified future" },
+    { id:12, title:"Brave New World", author:"Aldous Huxley", pubYear:1932, pages:311, thickness:0.7, height:7.9, genre:"Dystopian", settingYear:2540, settingLabel:"2540" },
+    { id:13, title:"The Handmaid's Tale", author:"Margaret Atwood", pubYear:1985, pages:311, thickness:0.7, height:7.9, genre:"Dystopian", settingYear:2005, settingLabel:"Early 2000s, near future" },
+    { id:14, title:"Harry Potter and the Sorcerer's Stone", author:"J.K. Rowling", pubYear:1997, pages:309, thickness:0.95, height:9.3, genre:"Fantasy", settingYear:1991, settingLabel:"1991" },
+    { id:15, title:"The Da Vinci Code", author:"Dan Brown", pubYear:2003, pages:454, thickness:1.15, height:6.8, genre:"Thriller", settingYear:2003, settingLabel:"2003" },
+    { id:16, title:"The Kite Runner", author:"Khaled Hosseini", pubYear:2003, pages:371, thickness:0.85, height:7.9, genre:"Historical Fiction", settingYear:1988, settingLabel:"1975–2001" },
+    { id:18, title:"The Book Thief", author:"Markus Zusak", pubYear:2005, pages:552, thickness:1.4, height:9.3, genre:"Historical Fiction", settingYear:1942, settingLabel:"1939–1945" },
+    { id:20, title:"The Road", author:"Cormac McCarthy", pubYear:2006, pages:287, thickness:0.65, height:7.9, genre:"Post-Apocalyptic", settingYear:null, settingLabel:"Unspecified, near future" },
+    { id:21, title:"Slaughterhouse-Five", author:"Kurt Vonnegut", pubYear:1969, pages:275, thickness:0.65, height:7.9, genre:"Sci-Fi", settingYear:1945, settingLabel:"1945, with time jumps" },
+    { id:24, title:"Educated", author:"Tara Westover", pubYear:2018, pages:334, thickness:0.8, height:7.9, genre:"Memoir", settingYear:2004, settingLabel:"1990s–2010s" },
+    { id:25, title:"The Martian", author:"Andy Weir", pubYear:2011, pages:369, thickness:0.85, height:7.9, genre:"Sci-Fi", settingYear:2035, settingLabel:"~2035" },
+    { id:26, title:"Sapiens: A Brief History of Humankind", author:"Yuval Noah Harari", pubYear:2015, pages:443, thickness:1.0, height:7.9, genre:"History", settingYear:null, settingLabel:"Spans roughly 70,000 BCE–present" },
+    { id:27, title:"The Diary of a Young Girl", author:"Anne Frank", pubYear:1952, pages:283, thickness:0.65, height:7.9, genre:"Memoir", settingYear:1943, settingLabel:"1942–1944" },
+    { id:28, title:"In Cold Blood", author:"Truman Capote", pubYear:1966, pages:343, thickness:0.75, height:7.9, genre:"True Crime", settingYear:1959, settingLabel:"1959–1965" },
+    { id:29, title:"Unbroken", author:"Laura Hillenbrand", pubYear:2010, pages:528, thickness:1.2, height:7.9, genre:"Biography", settingYear:1943, settingLabel:"1917–1945, WWII focus" },
+    { id:30, title:"A Brief History of Time", author:"Stephen Hawking", pubYear:1988, pages:212, thickness:0.5, height:7.9, genre:"Science", settingYear:null, settingLabel:"N/A — spans cosmic history" }
+  ];
+
+  function titleKey(b){ return b.title.replace(/^(the|a|an)\s+/i,'').toLowerCase(); }
+  function authorLastKey(b){ const p = b.author.trim().split(/\s+/); return p[p.length-1].toLowerCase(); }
+
+  const SORTS = [
+    { id:'title', label:'Title', fn:(a,b)=> titleKey(a).localeCompare(titleKey(b)) },
+    { id:'author', label:'Author', fn:(a,b)=> authorLastKey(a).localeCompare(authorLastKey(b)) },
+    { id:'published', label:'Year published', fn:(a,b)=> a.pubYear - b.pubYear },
+    { id:'setting', label:'Story setting', fn:(a,b)=>{
+        const av = a.settingYear===null ? Infinity : a.settingYear;
+        const bv = b.settingYear===null ? Infinity : b.settingYear;
+        if (av !== bv) return av - bv;
+        return titleKey(a).localeCompare(titleKey(b));
+      } },
+    { id:'thickness', label:'Thickness', fn:(a,b)=> a.thickness - b.thickness },
+    { id:'genre', label:'Genre', fn:(a,b)=> a.genre.localeCompare(b.genre) || titleKey(a).localeCompare(titleKey(b)) }
+  ];
+
+  let currentSort = 'title';
+  let reversed = false;
+  let activeId = null;
+
+  function packBooks(arr){
+    const shelves = [];
+    let cur = [], curWidth = 0;
+    for (const b of arr){
+      if (cur.length && curWidth + b.thickness > SHELF_WIDTH_IN){
+        shelves.push({ items: cur, used: curWidth });
+        cur = []; curWidth = 0;
+      }
+      cur.push(b);
+      curWidth += b.thickness;
+    }
+    if (cur.length) shelves.push({ items: cur, used: curWidth });
+    return shelves;
+  }
+
+  function buildSortRow(){
+    const row = document.getElementById('sortRow');
+    row.innerHTML = '';
+    SORTS.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'sortbtn';
+      btn.textContent = s.label;
+      btn.setAttribute('aria-pressed', s.id === currentSort ? 'true' : 'false');
+      btn.addEventListener('click', () => { currentSort = s.id; render(); });
+      row.appendChild(btn);
+    });
+    const rev = document.createElement('button');
+    rev.className = 'reversebtn';
+    rev.textContent = reversed ? '↑ reverse order' : '↓ reverse order';
+    rev.addEventListener('click', () => { reversed = !reversed; render(); });
+    row.appendChild(rev);
+  }
+
+  function buildLegend(){
+    const el = document.getElementById('legend');
+    el.innerHTML = '';
+    Object.keys(GENRE_COLORS).forEach(g => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = '<span class="swatch" style="background:' + GENRE_COLORS[g] + '"></span>' + g;
+      el.appendChild(item);
+    });
+  }
+
+  function showDetail(b, opts){
+    opts = opts || {};
+    activeId = b.id;
+    const d = document.getElementById('detail');
+    document.getElementById('dTitle').textContent = b.title;
+    document.getElementById('dAuthor').textContent = 'by ' + b.author;
+    document.getElementById('dPub').textContent = b.pubYear;
+    document.getElementById('dGenre').textContent = b.genre;
+    document.getElementById('dPages').textContent = b.pages + ' pages';
+    document.getElementById('dThick').textContent = b.thickness.toFixed(2) + ' in';
+    document.getElementById('dSettingYear').value = b.settingYear === null ? '' : b.settingYear;
+    document.getElementById('dSettingLabel').value = b.settingLabel;
+    d.classList.add('show');
+    if (!opts.silent) d.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+  document.getElementById('detailClose').addEventListener('click', () => {
+    document.getElementById('detail').classList.remove('show');
+    activeId = null;
+    renderSpineActiveStates();
+  });
+
+  function saveSetting(){
+    if (activeId === null) return;
+    const b = books.find(x => x.id === activeId);
+    if (!b) return;
+    const yearRaw = document.getElementById('dSettingYear').value.trim();
+    const labelRaw = document.getElementById('dSettingLabel').value.trim();
+    const parsedYear = parseInt(yearRaw, 10);
+    b.settingYear = (yearRaw === '' || isNaN(parsedYear)) ? null : parsedYear;
+    b.settingLabel = labelRaw !== '' ? labelRaw : (b.settingYear === null ? 'Unspecified' : String(b.settingYear));
+    render();
+    showDetail(b, { silent:true });
+    const hint = document.getElementById('dSaveHint');
+    hint.classList.add('show');
+    clearTimeout(hint._t);
+    hint._t = setTimeout(() => hint.classList.remove('show'), 1600);
+  }
+  document.getElementById('dSave').addEventListener('click', saveSetting);
+  ['dSettingYear','dSettingLabel'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveSetting();
+    });
+  });
+
+  function renderSpineActiveStates(){
+    document.querySelectorAll('.spine').forEach(el => {
+      el.classList.toggle('active', Number(el.dataset.id) === activeId);
+    });
+  }
+
+  function render(){
+    buildSortRow();
+
+    const sortObj = SORTS.find(s => s.id === currentSort);
+    let arr = books.slice().sort(sortObj.fn);
+    if (reversed) arr.reverse();
+
+    const shelves = packBooks(arr);
+
+    document.getElementById('statShelves').textContent = shelves.length;
+    document.getElementById('statInches').textContent = books.reduce((s,b)=>s+b.thickness,0).toFixed(1) + '"';
+
+    // ---- render shelves ----
+    const room = document.getElementById('shelfRoom');
+    room.innerHTML = '';
+    // measure available width using the page's inner padding
+    const probe = document.createElement('div');
+    probe.style.cssText = 'height:0;overflow:hidden;';
+    room.appendChild(probe);
+    const containerWidth = Math.min(document.querySelector('.page').clientWidth - 12, 560);
+    room.removeChild(probe);
+    const scale = containerWidth / SHELF_WIDTH_IN; // px per inch
+
+    shelves.forEach((shelf, idx) => {
+      const unit = document.createElement('div');
+      unit.className = 'shelf-unit';
+
+      const meta = document.createElement('div');
+      meta.className = 'shelf-meta';
+      meta.innerHTML = '<span>SHELF ' + (idx+1) + '</span><span>' + shelf.used.toFixed(2) + '" used of 24"</span>';
+      unit.appendChild(meta);
+
+      const box = document.createElement('div');
+      box.className = 'shelf-box';
+
+      const booksRow = document.createElement('div');
+      booksRow.className = 'shelf-books';
+
+      shelf.items.forEach(b => {
+        const spine = document.createElement('button');
+        spine.className = 'spine';
+        spine.type = 'button';
+        spine.dataset.id = b.id;
+        spine.style.width = Math.max(b.thickness * scale, 8) + 'px';
+        spine.style.height = (b.height * scale * 0.62) + 'px';
+        spine.style.background = GENRE_COLORS[b.genre] || '#555';
+        spine.title = b.title + ' — ' + b.author;
+        spine.setAttribute('aria-label', b.title + ' by ' + b.author + ', ' + b.thickness.toFixed(2) + ' inches thick');
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = b.title;
+        spine.appendChild(label);
+        spine.addEventListener('click', () => showDetail(b));
+        booksRow.appendChild(spine);
+      });
+
+      const remaining = SHELF_WIDTH_IN - shelf.used;
+      if (remaining > 0.15){
+        const gap = document.createElement('div');
+        gap.className = 'gap-slot';
+        gap.style.width = (remaining * scale) + 'px';
+        gap.textContent = remaining.toFixed(1) + '"';
+        booksRow.appendChild(gap);
+      }
+
+      box.appendChild(booksRow);
+      const plank = document.createElement('div');
+      plank.className = 'plank';
+      box.appendChild(plank);
+      unit.appendChild(box);
+      room.appendChild(unit);
+    });
+
+    renderSpineActiveStates();
+
+    // ---- render catalog cards ----
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = '';
+    let lastGroupWasFictional = null;
+    arr.forEach((b, i) => {
+      if (currentSort === 'setting'){
+        const isFictional = b.settingYear === null;
+        if (lastGroupWasFictional === null || isFictional !== lastGroupWasFictional){
+          const gl = document.createElement('div');
+          gl.className = 'group-label';
+          gl.style.gridColumn = '1 / -1';
+          gl.textContent = isFictional ? 'NO SINGLE DATE — INVENTED WORLDS OR SWEEPING TIMEFRAMES' : 'DATED SETTINGS';
+          grid.appendChild(gl);
+          lastGroupWasFictional = isFictional;
+        }
+      }
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML =
+        '<span class="accession">No. ' + String(i+1).padStart(2,'0') + '</span>' +
+        '<h4>' + b.title + '</h4>' +
+        '<div class="author">' + b.author + '</div>' +
+        '<div class="meta">' +
+          '<span>Published</span><b>' + b.pubYear + '</b>' +
+          '<span>Set in</span><b>' + b.settingLabel + '</b>' +
+          '<span>Pages</span><b>' + b.pages + '</b>' +
+          '<span>Thickness</span><b>' + b.thickness.toFixed(2) + ' in</b>' +
+        '</div>' +
+        '<span class="genre-tag" style="background:' + GENRE_COLORS[b.genre] + '">' + b.genre + '</span>';
+      card.addEventListener('click', () => showDetail(b));
+      grid.appendChild(card);
+    });
+  }
+
+  buildLegend();
+  render();
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(render, 150);
+  });
+})();
+</script>
+</body>
+</html>
