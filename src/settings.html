@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bookcase Settings · The 24-Inch Shelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wood-dark: #2E2016;
+    --wood-mid: #6B4530;
+    --wood-light: #8B6239;
+    --wood-edge: #1C130C;
+    --paper: #F1E9D8;
+    --ink: #241C14;
+    --ink-soft: #5A4C3B;
+    --brass: #A9813F;
+    --brass-light: #D8BA7C;
+    --card-bg: #FBF6EA;
+    --card-line: #C9BB9E;
+    --rule: rgba(36,28,20,0.18);
+    --shadow: rgba(20,13,7,0.45);
+    --warn: #B3382C;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --wood-dark: #17100A;
+      --wood-mid: #402A1B;
+      --wood-light: #57392A;
+      --wood-edge: #0D0805;
+      --paper: #1B1712;
+      --ink: #ECE3D2;
+      --ink-soft: #B7A98F;
+      --card-bg: #241E16;
+      --card-line: #4A4133;
+      --rule: rgba(236,227,210,0.16);
+      --shadow: rgba(0,0,0,0.6);
+      --warn: #E37A6B;
+    }
+  }
+  :root[data-theme="dark"] {
+    --wood-dark: #17100A;
+    --wood-mid: #402A1B;
+    --wood-light: #57392A;
+    --wood-edge: #0D0805;
+    --paper: #1B1712;
+    --ink: #ECE3D2;
+    --ink-soft: #B7A98F;
+    --card-bg: #241E16;
+    --card-line: #4A4133;
+    --rule: rgba(236,227,210,0.16);
+    --shadow: rgba(0,0,0,0.6);
+    --warn: #E37A6B;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 640px; margin: 0 auto; padding: 28px 18px 64px; }
+  a.back {
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .eyebrow-line {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--ink-soft);
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-size: 12.5px;
+    margin: 18px 0 6px;
+  }
+  .eyebrow-line::before { content: ""; width: 22px; height: 1px; background: var(--brass); }
+  h1 { font-size: clamp(26px, 7vw, 34px); line-height: 1.1; margin: 0 0 8px; }
+  .lede { color: var(--ink-soft); font-size: 15.5px; line-height: 1.5; margin: 0 0 22px; max-width: 46ch; }
+  form { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 18px 0; }
+  .fields { display: flex; flex-wrap: wrap; gap: 16px 24px; }
+  label.f {
+    display: flex; flex-direction: column; gap: 4px;
+    font-family: 'Courier Prime', monospace; font-size: 12px; color: var(--ink-soft);
+  }
+  input[type="number"] {
+    width: 120px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 15px;
+    padding: 8px 10px;
+    border: 1px solid var(--card-line);
+    border-radius: 2px;
+    background: var(--card-bg);
+    color: var(--ink);
+  }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  .hint { font-size: 12.5px; color: var(--ink-soft); margin: 12px 0 0; line-height: 1.5; }
+  .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  button.savebtn {
+    font-family: 'Source Serif 4', serif; font-size: 14px;
+    padding: 8px 16px; border-radius: 3px;
+    border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer;
+  }
+  button.savebtn:hover { background: var(--ink-soft); border-color: var(--ink-soft); }
+  button.linkbtn {
+    font: inherit; font-size: 13px; background: none; border: none; padding: 0;
+    color: var(--ink-soft); text-decoration: underline; cursor: pointer;
+  }
+  .status { font-family: 'Courier Prime', monospace; font-size: 12px; color: var(--ink-soft); min-height: 1.3em; }
+  .preview-wrap { margin-top: 24px; }
+  .row-label { font-family: 'Courier Prime', monospace; font-size: 11px; color: var(--ink-soft); margin-bottom: 9px; }
+  .preview-box {
+    border: 3px solid var(--wood-mid);
+    border-bottom-width: 14px;
+    background: var(--card-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Courier Prime', monospace; font-size: 12px; color: var(--ink-soft);
+    text-align: center; padding: 4px;
+  }
+  .facts { font-family: 'Courier Prime', monospace; font-size: 12px; color: var(--ink-soft); margin: 12px 0 0; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="index.html">‹ Back to the shelf</a>
+  <div class="eyebrow-line">CARD CATALOG · SETTINGS</div>
+  <h1>Bookcase settings</h1>
+  <p class="lede">Enter the inside measurements of one shelf on your real bookcase. Every shelf in the layout uses these dimensions.</p>
+
+  <form id="form" novalidate>
+    <div class="fields">
+      <label class="f" for="w">Shelf width (inches)<input type="number" id="w" step="0.5" inputmode="decimal"></label>
+      <label class="f" for="h">Clearance height (inches)<input type="number" id="h" step="0.5" inputmode="decimal"></label>
+    </div>
+    <p class="hint">Width can be 6–120 inches; height 4–30. Books taller than the clearance are flagged on the shelf, not removed.</p>
+    <div class="actions">
+      <button type="submit" class="savebtn">Save</button>
+      <button type="button" class="linkbtn" id="reset">Reset to 24" × 12"</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </form>
+
+  <div class="preview-wrap">
+    <div class="row-label">PREVIEW (TO SCALE)</div>
+    <div class="preview-box" id="preview"></div>
+    <p class="facts" id="facts"></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const STORE_KEY = 'shelf24.v1';
+  const LIM = { wMin:6, wMax:120, hMin:4, hMax:30 };
+  const $ = id => document.getElementById(id);
+  let saved = {};          // whole stored object; we only change shelfW / shelfH so nothing else is lost
+  let shelfW = 24, shelfH = 12;
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw){
+        const st = JSON.parse(raw);
+        if (st && typeof st === 'object'){
+          saved = st;
+          if (typeof st.shelfW === 'number' && st.shelfW >= LIM.wMin && st.shelfW <= LIM.wMax) shelfW = st.shelfW;
+          if (typeof st.shelfH === 'number' && st.shelfH >= LIM.hMin && st.shelfH <= LIM.hMax) shelfH = st.shelfH;
+        }
+      }
+    } catch (e) {}
+  }
+  function store(){
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(Object.assign({}, saved, { shelfW, shelfH })));
+      return true;
+    } catch (e) { return false; }
+  }
+  function clamp(v, lo, hi){ return Math.min(hi, Math.max(lo, v)); }
+
+  function draw(){
+    const w = parseFloat($('w').value), h = parseFloat($('h').value);
+    const W = isNaN(w) ? shelfW : clamp(w, LIM.wMin, LIM.wMax);
+    const H = isNaN(h) ? shelfH : clamp(h, LIM.hMin, LIM.hMax);
+    const avail = Math.min(document.querySelector('.page').clientWidth - 36, 560);
+    const scale = Math.min(avail / W, 24);
+    const box = $('preview');
+    box.style.width = (W * scale) + 'px';
+    box.style.height = (H * scale) + 'px';
+    box.textContent = W + '" × ' + H + '"';
+    let tall = '';
+    const books = Array.isArray(saved.books) ? saved.books : null;
+    if (books){
+      const n = books.filter(b => b && typeof b.height === 'number' && b.height > H).length;
+      tall = n ? n + ' of your ' + books.length + ' books are taller than ' + H + '".' : 'All ' + books.length + ' of your books fit under ' + H + '".';
+    }
+    $('facts').textContent = tall;
+  }
+  function fill(){ $('w').value = shelfW; $('h').value = shelfH; draw(); }
+
+  $('form').addEventListener('submit', e => {
+    e.preventDefault();
+    const w = parseFloat($('w').value), h = parseFloat($('h').value);
+    if (isNaN(w) || isNaN(h)){ $('status').textContent = 'Enter both a width and a height.'; return; }
+    shelfW = clamp(w, LIM.wMin, LIM.wMax);
+    shelfH = clamp(h, LIM.hMin, LIM.hMax);
+    fill();
+    $('status').textContent = store() ? 'Saved. Your shelf now uses ' + shelfW + '" × ' + shelfH + '".' : 'Could not save (browser storage is blocked).';
+  });
+  $('reset').addEventListener('click', () => {
+    shelfW = 24; shelfH = 12; fill();
+    $('status').textContent = store() ? 'Reset to 24" × 12" and saved.' : 'Could not save (browser storage is blocked).';
+  });
+  ['w','h'].forEach(id => $(id).addEventListener('input', draw));
+  window.addEventListener('resize', draw);
+
+  load();
+  fill();
+})();
+</script>
+</body>
+</html>

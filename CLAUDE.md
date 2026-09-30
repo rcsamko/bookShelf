@@ -14,7 +14,7 @@ It was originally built and iterated on as a single published HTML artifact in a
 
 ## Current state
 
-- **Fully working**, single self-contained file: `src/index.html`.
+- **Fully working**. Two self-contained pages: `src/index.html` (the shelf) and `src/settings.html` (bookcase width/height). They share state through the same `localStorage` key; the settings page rewrites only `shelfW`/`shelfH` and keeps every other stored field. The shelf page reloads on Back (`pageshow`) to pick up changes.
 - No build step, no package.json, no dependencies to install. Just open the file in a browser.
 - The only external resources are two Google Fonts (loaded via `<link>`): `Source Serif 4` and `Courier Prime`.
 - App state lives in plain JS variables and is persisted to `localStorage` (see below). Books can carry an optional `dimSource` string recording where a looked-up thickness came from.
@@ -32,9 +32,10 @@ Promotion is one-directional: merge `dev` into `test`, then `test` into `prod`. 
 ## Tech stack & constraints (please preserve unless asked to change)
 
 - **Vanilla HTML/CSS/JS only.** No React, no build tooling, no npm dependencies. This was a deliberate choice to keep it a single portable file.
-- **Self-contained file.** All CSS and JS are inlined in `src/index.html`. The only allowed external calls are the two Google Fonts stylesheet links and the on-demand book-dimension lookups (Open Library, then Google Books) made from `lookupDimensions()` when the user clicks "Look up real dimensions".
+- **Self-contained pages.** All CSS and JS are inlined in each HTML file (`src/index.html`, `src/settings.html`); the settings page duplicates the `:root` color tokens, so keep them in sync. The only allowed external calls are the two Google Fonts stylesheet links and the on-demand book-dimension lookups (Open Library, then Google Books) made from `lookupDimensions()` when the user clicks "Look up real dimensions".
 - **Persistence uses `localStorage`** (key `shelf24.v1`: book list, `shelfW`/`shelfH`, `groupBy`, `sortChain`, `nextId`, `customColors`; older saves with `sort`/`reversed` are migrated), saved on every `render()` and loaded at startup by `loadState()`. All reads/writes are in try/catch, and saved data is validated (`validBook`) before use; corrupt or missing data falls back to the built-in dataset. A footer link resets to defaults. If you change the book schema, bump the key version or migrate.
 - **Responsive, mobile-first.** The shelf visualization computes its px-per-inch scale from the actual rendered container width (see `render()` in the `<script>` block), so it works from ~320px phone screens up through desktop. Preserve this approach rather than hardcoding pixel widths.
+- In dark mode `--wood-dark` and `--paper` are both near-black: never pair them as background/text. Use `--ink` on `--paper` (inverted) for filled buttons/tags.
 - **Light/dark mode via CSS variables**, keyed off `prefers-color-scheme` and an optional `data-theme` attribute override. Any new UI should use the existing CSS custom properties (`--paper`, `--ink`, `--brass`, `--wood-*`, `--card-bg`, etc.) rather than hardcoded colors.
 - **Safe-area aware**: `env(safe-area-inset-*)` padding is already set up on `:root`; keep this if you add fixed/sticky elements.
 
@@ -71,6 +72,6 @@ None of these were requested yet — confirm scope with the user before starting
 
 ## Things to *not* change without asking
 
-- The single-file, no-build-step architecture.
+- The no-build-step, plain-files architecture (each page self-contained; `settings.html` is the one approved second page).
 - The card-catalog visual identity (colors/fonts) — see `docs/DESIGN_DECISIONS.md`.
 - The fact that shelf packing follows sort order rather than optimizing for minimum shelves — that's a deliberate, discussed choice, not an oversight.

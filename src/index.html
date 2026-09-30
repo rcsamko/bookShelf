@@ -153,12 +153,12 @@
     outline-offset: 2px;
   }
   .ctl-grid { display: flex; flex-wrap: wrap; gap: 14px 26px; margin-bottom: 16px; }
-  .size-row { display: flex; gap: 10px; }
-  .size-row label {
+  a.sizelink {
+    display: inline-block;
     font-family: 'Courier Prime', monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
-    display: flex; flex-direction: column; gap: 3px;
+    font-size: 13px;
+    color: var(--ink);
+    padding: 7px 0;
   }
   .controls input[type="number"], .controls select, .detail select {
     font-family: 'Courier Prime', monospace;
@@ -169,7 +169,6 @@
     background: var(--paper);
     color: var(--ink);
   }
-  .size-row input { width: 84px; }
   .detail select { width: 100%; }
   .controls input:focus-visible, .controls select:focus-visible, .detail select:focus-visible {
     outline: 2px solid var(--brass);
@@ -209,7 +208,7 @@
     position: relative;
   }
   .chip:hover { border-color: var(--brass); }
-  .chip.on { background: var(--wood-dark); color: var(--paper); border-color: var(--wood-dark); }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
   .chip .grip { opacity: 0.55; font-size: 13px; }
   .chip .pos {
     font-family: 'Courier Prime', monospace;
@@ -464,18 +463,18 @@
     font-size: 13.5px;
     padding: 7px 14px;
     border-radius: 3px;
-    border: 1px solid var(--wood-dark);
-    background: var(--wood-dark);
+    border: 1px solid var(--ink);
+    background: var(--ink);
     color: var(--paper);
     cursor: pointer;
   }
-  button.savebtn:hover { background: var(--wood-mid); border-color: var(--wood-mid); }
+  button.savebtn:hover { background: var(--ink-soft); border-color: var(--ink-soft); }
   button.lookupbtn {
     font-family: 'Source Serif 4', serif;
     font-size: 13.5px;
     padding: 6px 12px;
     border-radius: 3px;
-    border: 1px solid var(--wood-dark);
+    border: 1px solid var(--ink-soft);
     background: transparent;
     color: var(--ink);
     cursor: pointer;
@@ -622,11 +621,8 @@
   <section class="controls">
     <div class="ctl-grid">
       <div>
-        <div class="row-label">SHELF SIZE (INCHES)</div>
-        <div class="size-row">
-          <label for="shelfW">Width <input type="number" id="shelfW" step="0.5" inputmode="decimal"></label>
-          <label for="shelfH">Height <input type="number" id="shelfH" step="0.5" inputmode="decimal"></label>
-        </div>
+        <div class="row-label">BOOKCASE</div>
+        <a class="sizelink" id="sizeLink" href="settings.html"></a>
       </div>
       <div>
         <div class="row-label">GROUP BY</div>
@@ -1041,17 +1037,6 @@
     sel.innerHTML = GROUPS.map(g => '<option value="' + g.id + '">' + esc(g.label) + '</option>').join('');
     sel.value = groupBy;
     sel.addEventListener('change', () => { groupBy = sel.value; render(); });
-    $('shelfW').min = LIMITS.wMin; $('shelfW').max = LIMITS.wMax;
-    $('shelfH').min = LIMITS.hMin; $('shelfH').max = LIMITS.hMax;
-    [['shelfW', 'wMin', 'wMax', v => { shelfW = v; }], ['shelfH', 'hMin', 'hMax', v => { shelfH = v; }]].forEach(([id, lo, hi, set]) => {
-      const inp = $(id);
-      inp.addEventListener('change', () => {
-        const v = parseFloat(inp.value);
-        if (isNaN(v)) { render(); return; }   // render() resets the field to the current value
-        set(Math.min(LIMITS[hi], Math.max(LIMITS[lo], v)));
-        render();
-      });
-    });
   }
 
   // ---- detail panel ----
@@ -1317,8 +1302,7 @@
     saveState();
     renderChips();
     buildLegend();
-    $('shelfW').value = shelfW;
-    $('shelfH').value = shelfH;
+    $('sizeLink').textContent = shelfW + '" wide × ' + shelfH + '" tall — change ›';
     $('groupBy').value = groupBy;
 
     const arr = arrangedBooks();
@@ -1450,6 +1434,9 @@
 
   buildControls();
   render();
+
+  // Coming back from the settings page via Back: reload so the new size is picked up.
+  window.addEventListener('pageshow', e => { if (e.persisted) location.reload(); });
 
   let resizeTimer;
   window.addEventListener('resize', () => {
