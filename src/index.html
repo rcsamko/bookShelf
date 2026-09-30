@@ -22,6 +22,7 @@
     --card-line: #C9BB9E;
     --rule: rgba(36,28,20,0.18);
     --shadow: rgba(20,13,7,0.45);
+    --warn: #B3382C;
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -39,6 +40,7 @@
       --card-line: #4A4133;
       --rule: rgba(236,227,210,0.16);
       --shadow: rgba(0,0,0,0.6);
+      --warn: #E37A6B;
     }
   }
   :root[data-theme="dark"] {
@@ -53,6 +55,7 @@
     --card-line: #4A4133;
     --rule: rgba(236,227,210,0.16);
     --shadow: rgba(0,0,0,0.6);
+    --warn: #E37A6B;
   }
   html, body {
     height: 100%;
@@ -145,39 +148,121 @@
     gap: 8px;
     align-items: center;
   }
-  button.sortbtn {
-    font-family: 'Source Serif 4', serif;
-    font-size: 14px;
-    padding: 7px 13px;
+  .spine:focus-visible, .chip:focus-visible, .chipdir:focus-visible, .cardx:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
+  }
+  .ctl-grid { display: flex; flex-wrap: wrap; gap: 14px 26px; margin-bottom: 16px; }
+  .size-row { display: flex; gap: 10px; }
+  .size-row label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .controls input[type="number"], .controls select, .detail select {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    padding: 7px 9px;
+    border: 1px solid var(--card-line);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .size-row input { width: 84px; }
+  .detail select { width: 100%; }
+  .controls input:focus-visible, .controls select:focus-visible, .detail select:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 1px;
+  }
+  .sort-chain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    min-height: 46px;
+    padding: 6px;
+    border: 1px dashed var(--card-line);
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+  .sort-chain:empty::before {
+    content: "Drag a tag here to sort by it";
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    padding: 0 4px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
     border-radius: 3px;
     border: 1px solid var(--card-line);
     background: var(--card-bg);
     color: var(--ink);
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    font-size: 14px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative;
   }
-  button.sortbtn:hover { border-color: var(--brass); }
-  button.sortbtn[aria-pressed="true"] {
-    background: var(--wood-dark);
-    color: var(--paper);
-    border-color: var(--wood-dark);
-  }
-  button.sortbtn:focus-visible, .reversebtn:focus-visible, .spine:focus-visible {
-    outline: 2px solid var(--brass);
-    outline-offset: 2px;
-  }
-  .reversebtn {
-    margin-left: auto;
+  .chip:hover { border-color: var(--brass); }
+  .chip.on { background: var(--wood-dark); color: var(--paper); border-color: var(--wood-dark); }
+  .chip .grip { opacity: 0.55; font-size: 13px; }
+  .chip .pos {
     font-family: 'Courier Prime', monospace;
-    font-size: 12px;
-    background: none;
-    border: 1px dashed var(--card-line);
-    color: var(--ink-soft);
-    padding: 7px 10px;
-    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 17px;
+    text-align: center;
+    border-radius: 9px;
+    background: var(--brass);
+    color: var(--wood-edge);
+  }
+  .chip.dragging { z-index: 10; cursor: grabbing; box-shadow: 0 6px 14px var(--shadow); }
+  .chipdir {
+    font-family: 'Courier Prime', monospace;
+    font-size: 13px;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 2px;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
     cursor: pointer;
   }
-  .reversebtn:hover { color: var(--ink); border-color: var(--brass); }
+  .chip-marker { width: 0; height: 30px; margin-right: -8px; position: relative; }
+  .chip-marker::before {
+    content: ""; position: absolute; left: -5px; top: -3px; bottom: -3px;
+    width: 3px; border-radius: 2px; background: var(--brass);
+  }
+  .ctl-hint { font-size: 12px; color: var(--ink-soft); margin: 0; }
+  button.addbtn { margin: 4px 0 12px; }
+  .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+  .frow > div { min-width: 0; }
+  .removebtn {
+    font-family: 'Source Serif 4', serif;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 3px;
+    border: 1px solid var(--warn);
+    background: transparent;
+    color: var(--warn);
+    cursor: pointer;
+    margin: 8px 0 0 8px;
+  }
+  .cardx {
+    position: absolute; top: 4px; right: 5px;
+    width: 24px; height: 24px; line-height: 1;
+    font-size: 17px;
+    border: none; border-radius: 12px;
+    background: transparent; color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .cardx:hover { color: var(--warn); }
+  .empty { color: var(--ink-soft); font-style: italic; }
 
   /* ---- shelf room ---- */
   .shelfroom {
@@ -234,6 +319,16 @@
     white-space: nowrap;
     letter-spacing: 0.01em;
     font-family: 'Source Serif 4', serif;
+  }
+  .spine.toolong { outline: 2px dashed var(--warn); outline-offset: -2px; }
+  .clearance {
+    position: absolute; left: 0; right: 0; height: 0;
+    border-top: 1px dashed var(--rule);
+    pointer-events: none;
+  }
+  .clearance span {
+    position: absolute; right: 0; top: 1px;
+    font-family: 'Courier Prime', monospace; font-size: 9.5px; color: var(--ink-soft);
   }
   .gap-slot {
     flex-shrink: 0;
@@ -515,18 +610,66 @@
   <header class="top">
     <div class="eyebrow-line">CARD CATALOG · SHELF LAYOUT TOOL</div>
     <h1>The 24-Inch Shelf</h1>
-    <p class="lede">Twenty-five books — novels, memoirs, and narrative nonfiction — from the last hundred years, measured spine to spine. Choose an order below and watch them settle onto a real 24-inch shelf, row by row.</p>
+    <p class="lede">Novels, memoirs, and narrative nonfiction, measured spine to spine. Size your shelf, choose an order below, and watch the books settle onto it, row by row. Start with the 25 examples or make it your own.</p>
     <div class="stats">
       <div class="stat"><span class="n" id="statBooks">25</span><span class="l">books</span></div>
       <div class="stat"><span class="n" id="statShelves">–</span><span class="l">shelves needed</span></div>
       <div class="stat"><span class="n" id="statInches">–</span><span class="l">total inches of spine</span></div>
+      <div class="stat" id="statTallWrap" hidden><span class="n" id="statTall">0</span><span class="l">too tall for the shelf</span></div>
     </div>
   </header>
 
   <section class="controls">
-    <div class="row-label">ARRANGE BY</div>
-    <div class="sort-row" id="sortRow"></div>
+    <div class="ctl-grid">
+      <div>
+        <div class="row-label">SHELF SIZE (INCHES)</div>
+        <div class="size-row">
+          <label for="shelfW">Width <input type="number" id="shelfW" step="0.5" inputmode="decimal"></label>
+          <label for="shelfH">Height <input type="number" id="shelfH" step="0.5" inputmode="decimal"></label>
+        </div>
+      </div>
+      <div>
+        <div class="row-label">GROUP BY</div>
+        <select id="groupBy" aria-label="Group books by"></select>
+      </div>
+    </div>
+    <div class="row-label">ARRANGE BY — DRAG TAGS TO SET THE ORDER (1 = FIRST)</div>
+    <div class="sort-chain" id="sortActive" role="list" aria-label="Active sort order"></div>
+    <div class="row-label">UNUSED TAGS — DRAG UP, OR TAP, TO ADD</div>
+    <div class="sort-chain" id="sortTray" role="list" aria-label="Unused sort tags"></div>
+    <p class="ctl-hint">Books are sorted by tag 1, then ties by tag 2, and so on. The arrow on a tag flips its direction. Keyboard: arrows reorder, Delete removes, Enter flips. When grouping, each group starts on its own shelf.</p>
   </section>
+
+  <button class="savebtn addbtn" id="addBtn" type="button">+ Add a book</button>
+
+  <div class="detail" id="addPanel">
+    <h3>Add a book</h3>
+    <label class="editlabel" for="aTitle">Title</label>
+    <input type="text" id="aTitle" autocomplete="off">
+    <label class="editlabel" for="aAuthor">Author</label>
+    <input type="text" id="aAuthor" autocomplete="off">
+    <div class="frow">
+      <div><label class="editlabel" for="aPub">Year published</label><input type="number" id="aPub"></div>
+      <div><label class="editlabel" for="aPages">Pages</label><input type="number" id="aPages"></div>
+    </div>
+    <label class="editlabel" for="aGenre">Genre / subject</label>
+    <select id="aGenre"></select>
+    <input type="text" id="aGenreNew" placeholder="New genre name" style="display:none;margin-top:6px">
+    <div class="frow">
+      <div><label class="editlabel" for="aThick">Thickness, in (blank = estimate)</label><input type="number" id="aThick" step="0.01"></div>
+      <div><label class="editlabel" for="aHeight">Height, in (blank = 8.5)</label><input type="number" id="aHeight" step="0.1"></div>
+    </div>
+    <div class="frow">
+      <div><label class="editlabel" for="aSetYear">Story set — year (optional)</label><input type="number" id="aSetYear"></div>
+      <div><label class="editlabel" for="aSetLabel">Story set — description</label><input type="text" id="aSetLabel"></div>
+    </div>
+    <div class="edit-actions">
+      <button class="savebtn" id="aSubmit" type="button">Add to shelf</button>
+      <button class="lookupbtn" id="aLookup" type="button" style="margin-top:0">Look up real dimensions</button>
+      <button class="resetbtn" id="aCancel" type="button">cancel</button>
+    </div>
+    <p class="lookupnote" id="aNote" role="status"></p>
+  </div>
 
   <section class="shelfroom" id="shelfRoom" aria-live="polite"></section>
 
@@ -541,8 +684,9 @@
       <dt>Genre</dt><dd id="dGenre"></dd>
       <dt>Pages</dt><dd id="dPages"></dd>
       <dt>Thickness</dt><dd id="dThick"></dd>
+      <dt>Height</dt><dd id="dHeight"></dd>
     </dl>
-    <button class="lookupbtn" id="dLookup" type="button">Look up real dimensions</button>
+    <button class="lookupbtn" id="dLookup" type="button">Look up real dimensions</button><button class="removebtn" id="dRemove" type="button">Remove this book</button>
     <p class="lookupnote" id="dLookupNote" role="status"></p>
     <div class="edit-setting">
       <label class="editlabel" for="dSettingYear">Story set — year (for sorting)</label>
@@ -559,20 +703,18 @@
 
   <section class="catalog">
     <h2>Full Catalog</h2>
-    <p class="sub">Same 25 titles, same order as the shelf above, laid out as reference cards.</p>
+    <p class="sub">Same titles, same order as the shelf above, laid out as reference cards.</p>
     <div class="cards" id="cardsGrid"></div>
   </section>
 
   <footer class="note">
-    Thicknesses are estimated from typical page counts and edition trim sizes (roughly 460 pages per inch of paper, plus cover allowance for hardcovers) — a specific printing on your own shelf may run thinner or thicker. "Story set" is the period a book's narrative covers: for novels and memoirs that's the events on the page; for nonfiction like a history or a biography, it's the era the book focuses on. A few titles — invented worlds, or nonfiction spanning centuries — don't have a single year and are grouped separately when arranged by setting. Tap any book to edit its setting year and description yourself, or look up its real dimensions. Your edits are saved in this browser only. <button class="resetbtn" id="resetData" type="button">Reset to the original 25 books</button>
+    Thicknesses are estimated from typical page counts and edition trim sizes (roughly 460 pages per inch of paper, plus cover allowance for hardcovers) — a specific printing on your own shelf may run thinner or thicker. "Story set" is the period a book's narrative covers: for novels and memoirs that's the events on the page; for nonfiction like a history or a biography, it's the era the book focuses on. A few titles — invented worlds, or nonfiction spanning centuries — don't have a single year and are grouped separately when arranged by setting. Tap any book to edit its setting year and description yourself, or look up its real dimensions. Your edits are saved in this browser only. <button class="resetbtn" id="resetData" type="button">Reset to the original 25 books and settings</button>
   </footer>
 
 </div>
 
 <script>
 (function(){
-  const SHELF_WIDTH_IN = 24;
-
   const GENRE_COLORS = {
     "Classic Fiction": "#7A3B2E",
     "Dystopian": "#45566B",
@@ -617,9 +759,21 @@
     { id:30, title:"A Brief History of Time", author:"Stephen Hawking", pubYear:1988, pages:212, thickness:0.5, height:7.9, genre:"Science", settingYear:null, settingLabel:"N/A — spans cosmic history" }
   ];
 
+  const DEFAULT_BOOKS = JSON.parse(JSON.stringify(books));
+  const STORE_KEY = 'shelf24.v1';
+  const LIMITS = { wMin:6, wMax:120, hMin:4, hMax:30 };
+  // Spine colors handed to genres users add themselves, in order. Chosen to stay
+  // distinct from the 13 built-in genre colors above.
+  const EXTRA_COLORS = ['#8A3F5F', '#5C5C8A', '#2F6F73', '#7B6A1F', '#9A4E4E', '#4B5D2A'];
+
+  const $ = id => document.getElementById(id);
+  function esc(v){
+    return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
   function titleKey(b){ return b.title.replace(/^(the|a|an)\s+/i,'').toLowerCase(); }
   function authorLastKey(b){ const p = b.author.trim().split(/\s+/); return p[p.length-1].toLowerCase(); }
 
+  // Each comparator looks at ONE field only, so they can be chained in any order.
   const SORTS = [
     { id:'title', label:'Title', fn:(a,b)=> titleKey(a).localeCompare(titleKey(b)) },
     { id:'author', label:'Author', fn:(a,b)=> authorLastKey(a).localeCompare(authorLastKey(b)) },
@@ -627,22 +781,41 @@
     { id:'setting', label:'Story setting', fn:(a,b)=>{
         const av = a.settingYear===null ? Infinity : a.settingYear;
         const bv = b.settingYear===null ? Infinity : b.settingYear;
-        if (av !== bv) return av - bv;
-        return titleKey(a).localeCompare(titleKey(b));
+        return av === bv ? 0 : av - bv;   // Infinity - Infinity is NaN, so compare first
       } },
     { id:'thickness', label:'Thickness', fn:(a,b)=> a.thickness - b.thickness },
-    { id:'genre', label:'Genre', fn:(a,b)=> a.genre.localeCompare(b.genre) || titleKey(a).localeCompare(titleKey(b)) }
+    { id:'height', label:'Height', fn:(a,b)=> a.height - b.height },
+    { id:'genre', label:'Genre', fn:(a,b)=> a.genre.localeCompare(b.genre) }
+  ];
+  const GROUPS = [
+    { id:'none', label:'No grouping', key:null },
+    { id:'genre', label:'Subject (genre)', key:b => b.genre },
+    { id:'author', label:'Author', key:b => b.author }
   ];
 
-  let currentSort = 'title';
-  let reversed = false;
+  // ---- state ----
+  let shelfW = 24, shelfH = 12;
+  let groupBy = 'none';
+  let sortChain = [{ id:'title', dir:1 }];   // ordered: first entry is the primary sort
+  let activeId = null;
+  let nextId = 1 + Math.max(0, ...books.map(b => b.id));
+  const customColors = {};                   // genre -> color, for genres users add
+
+  function colorFor(genre){
+    if (!GENRE_COLORS[genre]){
+      const used = new Set(Object.values(GENRE_COLORS));
+      let c = EXTRA_COLORS.find(x => !used.has(x));
+      if (!c){
+        let h = 0; for (const ch of genre) h = (h * 31 + ch.charCodeAt(0)) % 360;
+        c = 'hsl(' + h + ', 35%, 32%)';
+      }
+      GENRE_COLORS[genre] = c;
+      customColors[genre] = c;
+    }
+    return GENRE_COLORS[genre];
+  }
 
   // ---- persistence (localStorage, always guarded) ----
-  const STORE_KEY = 'shelf24.v1';
-  const DEFAULT_BOOKS = JSON.parse(JSON.stringify(books));
-  function esc(v){
-    return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
   function validBook(b){
     return b && typeof b === 'object' && typeof b.id === 'number' &&
       typeof b.title === 'string' && typeof b.author === 'string' &&
@@ -651,6 +824,7 @@
       typeof b.pubYear === 'number' && typeof b.settingLabel === 'string' &&
       (b.settingYear === null || typeof b.settingYear === 'number');
   }
+  const inRange = (n, lo, hi) => typeof n === 'number' && n >= lo && n <= hi;
   function loadState(){
     try {
       const raw = localStorage.getItem(STORE_KEY);
@@ -659,83 +833,248 @@
       if (Array.isArray(st.books) && st.books.length && st.books.every(validBook)){
         books.splice(0, books.length, ...st.books);
       }
-      if (SORTS.some(x => x.id === st.sort)) currentSort = st.sort;
-      if (typeof st.reversed === 'boolean') reversed = st.reversed;
+      if (st.customColors && typeof st.customColors === 'object'){
+        for (const g of Object.keys(st.customColors)){
+          const c = st.customColors[g];
+          if (typeof c === 'string' && /^(#[0-9a-f]{6}|hsl\(\d{1,3}, \d{1,3}%, \d{1,3}%\))$/i.test(c)){
+            GENRE_COLORS[g] = c; customColors[g] = c;
+          }
+        }
+      }
+      if (inRange(st.shelfW, LIMITS.wMin, LIMITS.wMax)) shelfW = st.shelfW;
+      if (inRange(st.shelfH, LIMITS.hMin, LIMITS.hMax)) shelfH = st.shelfH;
+      if (GROUPS.some(g => g.id === st.groupBy)) groupBy = st.groupBy;
+      if (Array.isArray(st.sortChain)){
+        const seen = new Set();
+        sortChain = st.sortChain.filter(k => k && SORTS.some(s => s.id === k.id) && !seen.has(k.id) && seen.add(k.id))
+          .map(k => ({ id:k.id, dir: k.dir === -1 ? -1 : 1 }));
+      } else if (SORTS.some(s => s.id === st.sort)){
+        // older saves: a single sort plus a reversed flag
+        sortChain = [{ id:st.sort, dir: st.reversed === true ? -1 : 1 }];
+      }
+      if (typeof st.nextId === 'number') nextId = st.nextId;
     } catch (e) { /* storage unavailable or corrupt: fall back to defaults */ }
+    nextId = Math.max(nextId, 1 + Math.max(0, ...books.map(b => b.id)));
   }
   function saveState(){
     try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ books, sort: currentSort, reversed }));
+      localStorage.setItem(STORE_KEY, JSON.stringify({ books, shelfW, shelfH, groupBy, sortChain, nextId, customColors }));
     } catch (e) { /* ignore: private mode / quota */ }
   }
   function clearState(){
     try { localStorage.removeItem(STORE_KEY); } catch (e) {}
   }
   loadState();
-  let activeId = null;
+  books.forEach(b => colorFor(b.genre));
 
-  function packBooks(arr){
+  // ---- sorting, grouping, packing ----
+  function compareBooks(a, b){
+    for (const k of sortChain){
+      const r = SORTS.find(s => s.id === k.id).fn(a, b);
+      if (r) return r * k.dir;
+    }
+    return titleKey(a).localeCompare(titleKey(b)) || a.id - b.id;   // stable final tie-break
+  }
+  function groupKeyFn(){ return GROUPS.find(g => g.id === groupBy).key; }
+  function arrangedBooks(){
+    const gk = groupKeyFn();
+    return books.slice().sort((a, b) => {
+      if (gk){ const r = gk(a).localeCompare(gk(b)); if (r) return r; }
+      return compareBooks(a, b);
+    });
+  }
+  // Greedy, order-preserving: a new shelf starts when the next book doesn't fit,
+  // or (when grouping) when the group changes so each group starts on its own shelf.
+  function packBooks(arr, width, keyFn){
     const shelves = [];
-    let cur = [], curWidth = 0;
+    let cur = [], curWidth = 0, curKey = null;
     for (const b of arr){
-      if (cur.length && curWidth + b.thickness > SHELF_WIDTH_IN){
-        shelves.push({ items: cur, used: curWidth });
+      const k = keyFn ? keyFn(b) : null;
+      if (cur.length && (curWidth + b.thickness > width || k !== curKey)){
+        shelves.push({ items: cur, used: curWidth, group: curKey });
         cur = []; curWidth = 0;
       }
       cur.push(b);
       curWidth += b.thickness;
+      curKey = k;
     }
-    if (cur.length) shelves.push({ items: cur, used: curWidth });
+    if (cur.length) shelves.push({ items: cur, used: curWidth, group: curKey });
     return shelves;
   }
 
-  function buildSortRow(){
-    const row = document.getElementById('sortRow');
-    row.innerHTML = '';
-    SORTS.forEach(s => {
-      const btn = document.createElement('button');
-      btn.className = 'sortbtn';
-      btn.textContent = s.label;
-      btn.setAttribute('aria-pressed', s.id === currentSort ? 'true' : 'false');
-      btn.addEventListener('click', () => { currentSort = s.id; render(); });
-      row.appendChild(btn);
+  // ---- sort tags (drag to reorder / add / remove) ----
+  function makeChip(id, pos, dir){
+    const s = SORTS.find(x => x.id === id);
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (pos ? ' on' : '');
+    chip.tabIndex = 0;
+    chip.dataset.id = id;
+    chip.setAttribute('role', 'listitem');
+    chip.setAttribute('aria-label', s.label + (pos ? ', sort priority ' + pos + (dir === 1 ? ', ascending' : ', descending') +
+      '. Arrow keys reorder, Delete removes, Enter reverses.' : ', not used. Press Enter to add.'));
+    chip.innerHTML = '<span class="grip" aria-hidden="true">⠿</span>' +
+      (pos ? '<span class="pos">' + pos + '</span>' : '') +
+      '<span class="chiplabel">' + esc(s.label) + '</span>';
+    if (pos){
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'chipdir';
+      d.textContent = dir === 1 ? '↑' : '↓';
+      d.title = dir === 1 ? 'Ascending — click to reverse' : 'Descending — click to reverse';
+      d.setAttribute('aria-label', d.title);
+      d.addEventListener('click', e => { e.stopPropagation(); toggleDir(id); });
+      chip.appendChild(d);
+    }
+    chip.addEventListener('pointerdown', chipDown);
+    chip.addEventListener('pointermove', chipMove);
+    chip.addEventListener('pointerup', chipUp);
+    chip.addEventListener('pointercancel', chipCancel);
+    chip.addEventListener('keydown', chipKey);
+    return chip;
+  }
+  function renderChips(){
+    const act = $('sortActive'), tray = $('sortTray');
+    act.innerHTML = ''; tray.innerHTML = '';
+    sortChain.forEach((k, i) => act.appendChild(makeChip(k.id, i + 1, k.dir)));
+    SORTS.filter(s => !sortChain.some(k => k.id === s.id)).forEach(s => tray.appendChild(makeChip(s.id, 0, 1)));
+  }
+  function toggleDir(id){
+    const k = sortChain.find(x => x.id === id);
+    if (k){ k.dir = -k.dir; render(); focusChip(id); }
+  }
+  function focusChip(id){
+    const c = document.querySelector('.chip[data-id="' + id + '"]');
+    if (c) c.focus();
+  }
+  function chipKey(e){
+    if (e.target.closest('.chipdir')) return;
+    const id = e.currentTarget.dataset.id;
+    const i = sortChain.findIndex(k => k.id === id);
+    let handled = true;
+    if (i < 0){
+      if (e.key === 'Enter' || e.key === ' ') sortChain.push({ id, dir:1 });
+      else handled = false;
+    } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowUp') && i > 0){
+      [sortChain[i-1], sortChain[i]] = [sortChain[i], sortChain[i-1]];
+    } else if ((e.key === 'ArrowRight' || e.key === 'ArrowDown') && i < sortChain.length - 1){
+      [sortChain[i+1], sortChain[i]] = [sortChain[i], sortChain[i+1]];
+    } else if (e.key === 'Delete' || e.key === 'Backspace'){
+      sortChain.splice(i, 1);
+    } else if (e.key === 'Enter' || e.key === ' '){
+      sortChain[i].dir = -sortChain[i].dir;
+    } else handled = false;
+    if (handled){ e.preventDefault(); render(); focusChip(id); }
+  }
+
+  // Pointer-based drag (works for mouse, pen and touch; HTML5 drag-and-drop does not on phones).
+  let drag = null;
+  function chipDown(e){
+    if (e.button > 0 || e.target.closest('.chipdir')) return;
+    const chip = e.currentTarget;
+    drag = { chip, id: chip.dataset.id, sx: e.clientX, sy: e.clientY, active: false, zone: null, idx: 0, marker: null };
+    try { chip.setPointerCapture(e.pointerId); } catch (err) {}
+  }
+  function chipMove(e){
+    if (!drag || drag.chip !== e.currentTarget) return;
+    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (!drag.active){
+      if (Math.hypot(dx, dy) < 6) return;
+      drag.active = true;
+      drag.chip.classList.add('dragging');
+      drag.marker = document.createElement('span');
+      drag.marker.className = 'chip-marker';
+    }
+    drag.chip.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+    let zone = null;
+    for (const z of [$('sortActive'), $('sortTray')]){
+      const r = z.getBoundingClientRect();
+      if (e.clientX >= r.left - 12 && e.clientX <= r.right + 12 && e.clientY >= r.top - 12 && e.clientY <= r.bottom + 12) zone = z;
+    }
+    drag.zone = zone;
+    if (!zone){ drag.marker.remove(); return; }
+    const chips = [...zone.querySelectorAll('.chip')].filter(c => c !== drag.chip);
+    let idx = 0;
+    chips.forEach(c => {
+      const r = c.getBoundingClientRect();
+      if (e.clientY > r.bottom || (e.clientY >= r.top && e.clientX > r.left + r.width / 2)) idx++;
     });
-    const rev = document.createElement('button');
-    rev.className = 'reversebtn';
-    rev.textContent = reversed ? '↑ reverse order' : '↓ reverse order';
-    rev.addEventListener('click', () => { reversed = !reversed; render(); });
-    row.appendChild(rev);
+    drag.idx = idx;
+    zone.insertBefore(drag.marker, chips[idx] || null);
+  }
+  function chipUp(e){
+    if (!drag || drag.chip !== e.currentTarget) return;
+    const d = drag; drag = null;
+    d.chip.style.transform = '';
+    d.chip.classList.remove('dragging');
+    if (d.marker) d.marker.remove();
+    if (!d.active){
+      // a plain click on an unused tag adds it as the last sort
+      if (!sortChain.some(k => k.id === d.id)){ sortChain.push({ id:d.id, dir:1 }); render(); }
+      return;
+    }
+    if (!d.zone){ renderChips(); return; }   // dropped outside: leave as it was
+    const prev = sortChain.find(k => k.id === d.id);
+    sortChain = sortChain.filter(k => k.id !== d.id);
+    if (d.zone === $('sortActive')) sortChain.splice(Math.min(d.idx, sortChain.length), 0, { id:d.id, dir: prev ? prev.dir : 1 });
+    render();
+  }
+  function chipCancel(e){
+    if (!drag || drag.chip !== e.currentTarget) return;
+    const d = drag; drag = null;
+    d.chip.style.transform = ''; d.chip.classList.remove('dragging');
+    if (d.marker) d.marker.remove();
   }
 
   function buildLegend(){
-    const el = document.getElementById('legend');
+    const el = $('legend');
     el.innerHTML = '';
-    Object.keys(GENRE_COLORS).forEach(g => {
+    [...new Set(books.map(b => b.genre))].sort().forEach(g => {
       const item = document.createElement('div');
       item.className = 'legend-item';
-      item.innerHTML = '<span class="swatch" style="background:' + GENRE_COLORS[g] + '"></span>' + g;
+      item.innerHTML = '<span class="swatch" style="background:' + colorFor(g) + '"></span>' + esc(g);
       el.appendChild(item);
     });
   }
 
+  function buildControls(){
+    const sel = $('groupBy');
+    sel.innerHTML = GROUPS.map(g => '<option value="' + g.id + '">' + esc(g.label) + '</option>').join('');
+    sel.value = groupBy;
+    sel.addEventListener('change', () => { groupBy = sel.value; render(); });
+    $('shelfW').min = LIMITS.wMin; $('shelfW').max = LIMITS.wMax;
+    $('shelfH').min = LIMITS.hMin; $('shelfH').max = LIMITS.hMax;
+    [['shelfW', 'wMin', 'wMax', v => { shelfW = v; }], ['shelfH', 'hMin', 'hMax', v => { shelfH = v; }]].forEach(([id, lo, hi, set]) => {
+      const inp = $(id);
+      inp.addEventListener('change', () => {
+        const v = parseFloat(inp.value);
+        if (isNaN(v)) { render(); return; }   // render() resets the field to the current value
+        set(Math.min(LIMITS[hi], Math.max(LIMITS[lo], v)));
+        render();
+      });
+    });
+  }
+
+  // ---- detail panel ----
   function showDetail(b, opts){
     opts = opts || {};
     activeId = b.id;
-    const d = document.getElementById('detail');
-    document.getElementById('dTitle').textContent = b.title;
-    document.getElementById('dAuthor').textContent = 'by ' + b.author;
-    document.getElementById('dPub').textContent = b.pubYear;
-    document.getElementById('dGenre').textContent = b.genre;
-    document.getElementById('dPages').textContent = b.pages + ' pages';
-    document.getElementById('dThick').textContent = b.thickness.toFixed(2) + ' in (' + (b.dimSource || 'estimated') + ')';
-    if (!opts.silent) document.getElementById('dLookupNote').textContent = '';
-    document.getElementById('dSettingYear').value = b.settingYear === null ? '' : b.settingYear;
-    document.getElementById('dSettingLabel').value = b.settingLabel;
+    $('addPanel').classList.remove('show');
+    const d = $('detail');
+    $('dTitle').textContent = b.title;
+    $('dAuthor').textContent = 'by ' + b.author;
+    $('dPub').textContent = b.pubYear;
+    $('dGenre').textContent = b.genre;
+    $('dPages').textContent = b.pages + ' pages';
+    $('dThick').textContent = b.thickness.toFixed(2) + ' in (' + (b.dimSource || 'estimated') + ')';
+    $('dHeight').textContent = b.height.toFixed(1) + ' in' + (b.height > shelfH ? ' — taller than the shelf' : '');
+    if (!opts.silent) $('dLookupNote').textContent = '';
+    $('dSettingYear').value = b.settingYear === null ? '' : b.settingYear;
+    $('dSettingLabel').value = b.settingLabel;
     d.classList.add('show');
     if (!opts.silent) d.scrollIntoView({ behavior:'smooth', block:'nearest' });
   }
-  document.getElementById('detailClose').addEventListener('click', () => {
-    document.getElementById('detail').classList.remove('show');
+  $('detailClose').addEventListener('click', () => {
+    $('detail').classList.remove('show');
     activeId = null;
     renderSpineActiveStates();
   });
@@ -795,13 +1134,8 @@
     }).filter(Boolean);
     return summarize(dims, vols.map(v => v.pageCount).filter(okPages), 'Google Books');
   }
-  async function lookupDimensions(){
-    const b = books.find(x => x.id === activeId);
-    if (!b) return;
-    const btn = document.getElementById('dLookup');
-    const note = document.getElementById('dLookupNote');
-    btn.disabled = true;
-    note.textContent = 'Looking up…';
+  // Returns {thickness, height, pages, source} (any of the first three may be null) or null.
+  async function fetchDimensions(b){
     let found = null;
     for (const fn of [lookupOpenLibrary, lookupGoogleBooks]){
       try {
@@ -810,6 +1144,17 @@
         if (found && found.thickness !== null) break;
       } catch (e) { /* offline, blocked or rate-limited: try the next source */ }
     }
+    return found;
+  }
+  const estimateThickness = pages => Math.max(0.1, Math.round(pages / 460 * 100) / 100);
+
+  async function lookupDimensions(){
+    const b = books.find(x => x.id === activeId);
+    if (!b) return;
+    const btn = $('dLookup'), note = $('dLookupNote');
+    btn.disabled = true;
+    note.textContent = 'Looking up…';
+    const found = await fetchDimensions(b);
     btn.disabled = false;
     if (activeId !== b.id) return;
     if (!found){
@@ -824,44 +1169,142 @@
       note.textContent = 'Set from ' + found.source + ': ' + b.thickness.toFixed(2) + '" thick.';
     } else {
       // Only a page count was available: use the project's pages/460 estimate.
-      b.thickness = Math.round(found.pages / 460 * 100) / 100 || b.thickness;
+      b.thickness = estimateThickness(found.pages);
       b.dimSource = 'estimated from ' + found.source + ' page count';
       note.textContent = 'No spine width listed; estimated from ' + found.pages + ' pages (' + found.source + ').';
     }
     render();
     showDetail(b, { silent: true });
   }
-  document.getElementById('dLookup').addEventListener('click', lookupDimensions);
-  document.getElementById('resetData').addEventListener('click', () => {
-    if (!confirm('Discard your edits and restore the original 25 books?')) return;
-    clearState();
-    books.splice(0, books.length, ...JSON.parse(JSON.stringify(DEFAULT_BOOKS)));
-    currentSort = 'title'; reversed = false; activeId = null;
-    document.getElementById('detail').classList.remove('show');
-    render();
-  });
+  $('dLookup').addEventListener('click', lookupDimensions);
 
   function saveSetting(){
     if (activeId === null) return;
     const b = books.find(x => x.id === activeId);
     if (!b) return;
-    const yearRaw = document.getElementById('dSettingYear').value.trim();
-    const labelRaw = document.getElementById('dSettingLabel').value.trim();
+    const yearRaw = $('dSettingYear').value.trim();
+    const labelRaw = $('dSettingLabel').value.trim();
     const parsedYear = parseInt(yearRaw, 10);
     b.settingYear = (yearRaw === '' || isNaN(parsedYear)) ? null : parsedYear;
     b.settingLabel = labelRaw !== '' ? labelRaw : (b.settingYear === null ? 'Unspecified' : String(b.settingYear));
     render();
     showDetail(b, { silent:true });
-    const hint = document.getElementById('dSaveHint');
+    const hint = $('dSaveHint');
     hint.classList.add('show');
     clearTimeout(hint._t);
     hint._t = setTimeout(() => hint.classList.remove('show'), 1600);
   }
-  document.getElementById('dSave').addEventListener('click', saveSetting);
+  $('dSave').addEventListener('click', saveSetting);
   ['dSettingYear','dSettingLabel'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => {
+    $(id).addEventListener('keydown', e => {
       if (e.key === 'Enter') saveSetting();
     });
+  });
+
+  // ---- add / remove books ----
+  function removeBook(id){
+    const b = books.find(x => x.id === id);
+    if (!b || !confirm('Remove "' + b.title + '" from your shelf?')) return;
+    books.splice(books.indexOf(b), 1);
+    if (activeId === id){ activeId = null; $('detail').classList.remove('show'); }
+    render();
+  }
+  $('dRemove').addEventListener('click', () => { if (activeId !== null) removeBook(activeId); });
+
+  function fillGenreSelect(){
+    const sel = $('aGenre');
+    const genres = [...new Set([...Object.keys(GENRE_COLORS), ...books.map(b => b.genre)])].sort();
+    sel.innerHTML = genres.map(g => '<option>' + esc(g) + '</option>').join('') + '<option value="__new">New genre…</option>';
+  }
+  $('aGenre').addEventListener('change', () => {
+    const isNew = $('aGenre').value === '__new';
+    $('aGenreNew').style.display = isNew ? 'block' : 'none';
+    if (isNew) $('aGenreNew').focus();
+  });
+  function openAddPanel(){
+    activeId = null;
+    $('detail').classList.remove('show');
+    renderSpineActiveStates();
+    fillGenreSelect();
+    ['aTitle','aAuthor','aPub','aPages','aHeight','aThick','aSetYear','aSetLabel','aGenreNew'].forEach(id => { $(id).value = ''; });
+    $('aGenreNew').style.display = 'none';
+    $('aNote').textContent = '';
+    $('addPanel').classList.add('show');
+    $('addPanel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    $('aTitle').focus();
+  }
+  $('addBtn').addEventListener('click', openAddPanel);
+  $('aCancel').addEventListener('click', () => $('addPanel').classList.remove('show'));
+
+  $('aLookup').addEventListener('click', async () => {
+    const title = $('aTitle').value.trim(), author = $('aAuthor').value.trim();
+    const note = $('aNote');
+    if (!title){ note.textContent = 'Enter a title first.'; return; }
+    $('aLookup').disabled = true;
+    note.textContent = 'Looking up…';
+    const found = await fetchDimensions({ title, author });
+    $('aLookup').disabled = false;
+    if (!found){ note.textContent = 'No dimensions found (or offline). Fill them in by hand, or leave blank to estimate.'; return; }
+    if (found.pages !== null) $('aPages').value = found.pages;
+    if (found.height !== null) $('aHeight').value = found.height.toFixed(1);
+    if (found.thickness !== null){
+      $('aThick').value = found.thickness.toFixed(2);
+      note.textContent = 'Filled from ' + found.source + '. Check the values, then add the book.';
+    } else {
+      note.textContent = 'Only a page count was found (' + found.source + '); thickness will be estimated from it.';
+    }
+  });
+
+  function addBook(){
+    const note = $('aNote');
+    const title = $('aTitle').value.trim(), author = $('aAuthor').value.trim();
+    const pubYear = parseInt($('aPub').value, 10);
+    const pages = parseInt($('aPages').value, 10);
+    const heightRaw = $('aHeight').value.trim(), thickRaw = $('aThick').value.trim();
+    let genre = $('aGenre').value === '__new' ? $('aGenreNew').value.trim() : $('aGenre').value;
+    const err = msg => { note.textContent = msg; };
+    if (!title) return err('Title is required.');
+    if (!author) return err('Author is required.');
+    if (!genre) return err('Pick a genre, or type a name for a new one.');
+    if (isNaN(pubYear) || pubYear < 1 || pubYear > 2100) return err('Enter the year published.');
+    if (isNaN(pages) || pages < 10 || pages > 5000) return err('Enter a page count (10–5000).');
+    const height = heightRaw === '' ? 8.5 : parseFloat(heightRaw);
+    if (isNaN(height) || height < 3 || height > 20) return err('Height should be 3–20 inches (blank = 8.5).');
+    const thickness = thickRaw === '' ? estimateThickness(pages) : parseFloat(thickRaw);
+    if (isNaN(thickness) || thickness < 0.1 || thickness > 6) return err('Thickness should be 0.1–6 inches (blank = estimate from pages).');
+    const yearRaw = $('aSetYear').value.trim();
+    const sy = parseInt(yearRaw, 10);
+    const settingYear = (yearRaw === '' || isNaN(sy)) ? null : sy;
+    const labelRaw = $('aSetLabel').value.trim();
+    const book = {
+      id: nextId++, title, author, pubYear, pages,
+      thickness: Math.round(thickness * 100) / 100,
+      height: Math.round(height * 10) / 10,
+      genre, settingYear,
+      settingLabel: labelRaw || (settingYear === null ? 'Unspecified' : String(settingYear))
+    };
+    if (thickRaw !== '') book.dimSource = 'entered by hand';
+    colorFor(genre);
+    books.push(book);
+    $('addPanel').classList.remove('show');
+    render();
+    showDetail(book);
+  }
+  $('aSubmit').addEventListener('click', addBook);
+  $('addPanel').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.matches('input')) { e.preventDefault(); addBook(); }
+  });
+
+  $('resetData').addEventListener('click', () => {
+    if (!confirm('Discard your changes and restore the original 25 books and settings?')) return;
+    clearState();
+    books.splice(0, books.length, ...JSON.parse(JSON.stringify(DEFAULT_BOOKS)));
+    Object.keys(customColors).forEach(g => { delete GENRE_COLORS[g]; delete customColors[g]; });
+    shelfW = 24; shelfH = 12; groupBy = 'none'; sortChain = [{ id:'title', dir:1 }]; activeId = null;
+    nextId = 1 + Math.max(...books.map(b => b.id));
+    $('groupBy').value = groupBy;
+    $('detail').classList.remove('show');
+    render();
   });
 
   function renderSpineActiveStates(){
@@ -872,35 +1315,43 @@
 
   function render(){
     saveState();
-    buildSortRow();
+    renderChips();
+    buildLegend();
+    $('shelfW').value = shelfW;
+    $('shelfH').value = shelfH;
+    $('groupBy').value = groupBy;
 
-    const sortObj = SORTS.find(s => s.id === currentSort);
-    let arr = books.slice().sort(sortObj.fn);
-    if (reversed) arr.reverse();
+    const arr = arrangedBooks();
+    const gk = groupKeyFn();
+    const shelves = packBooks(arr, shelfW, gk);
+    const tooTall = books.filter(b => b.height > shelfH).length;
 
-    const shelves = packBooks(arr);
-
-    document.getElementById('statShelves').textContent = shelves.length;
-    document.getElementById('statInches').textContent = books.reduce((s,b)=>s+b.thickness,0).toFixed(1) + '"';
+    $('statBooks').textContent = books.length;
+    $('statShelves').textContent = shelves.length;
+    $('statInches').textContent = books.reduce((s,b)=>s+b.thickness,0).toFixed(1) + '"';
+    $('statTallWrap').hidden = tooTall === 0;
+    $('statTall').textContent = tooTall;
 
     // ---- render shelves ----
-    const room = document.getElementById('shelfRoom');
+    const room = $('shelfRoom');
     room.innerHTML = '';
-    // measure available width using the page's inner padding
-    const probe = document.createElement('div');
-    probe.style.cssText = 'height:0;overflow:hidden;';
-    room.appendChild(probe);
+    if (!books.length){
+      room.innerHTML = '<p class="empty">The shelf is empty. Add a book to get started.</p>';
+    }
     const containerWidth = Math.min(document.querySelector('.page').clientWidth - 12, 560);
-    room.removeChild(probe);
-    const scale = containerWidth / SHELF_WIDTH_IN; // px per inch
+    // px per inch; capped so a very narrow shelf isn't blown up to giant spines
+    const scale = Math.min(containerWidth / shelfW, 24);
 
     shelves.forEach((shelf, idx) => {
       const unit = document.createElement('div');
       unit.className = 'shelf-unit';
+      unit.style.maxWidth = (shelfW * scale + 12) + 'px';
 
       const meta = document.createElement('div');
       meta.className = 'shelf-meta';
-      meta.innerHTML = '<span>SHELF ' + (idx+1) + '</span><span>' + shelf.used.toFixed(2) + '" used of 24"</span>';
+      const prev = shelves[idx - 1];
+      const groupTxt = gk ? ' · ' + esc(shelf.group) + (prev && prev.group === shelf.group ? ' (cont.)' : '') : '';
+      meta.innerHTML = '<span>SHELF ' + (idx+1) + groupTxt + '</span><span>' + shelf.used.toFixed(2) + '" used of ' + shelfW + '"</span>';
       unit.appendChild(meta);
 
       const box = document.createElement('div');
@@ -908,17 +1359,26 @@
 
       const booksRow = document.createElement('div');
       booksRow.className = 'shelf-books';
+      const tallest = Math.max(shelfH, ...shelf.items.map(b => b.height));
+      booksRow.style.height = (tallest * scale) + 'px';
+
+      const clear = document.createElement('div');
+      clear.className = 'clearance';
+      clear.style.bottom = (shelfH * scale) + 'px';
+      clear.innerHTML = '<span>' + shelfH + '" clearance</span>';
+      booksRow.appendChild(clear);
 
       shelf.items.forEach(b => {
         const spine = document.createElement('button');
-        spine.className = 'spine';
+        spine.className = 'spine' + (b.height > shelfH ? ' toolong' : '');
         spine.type = 'button';
         spine.dataset.id = b.id;
         spine.style.width = Math.max(b.thickness * scale, 8) + 'px';
-        spine.style.height = (b.height * scale * 0.62) + 'px';
-        spine.style.background = GENRE_COLORS[b.genre] || '#555';
-        spine.title = b.title + ' — ' + b.author;
-        spine.setAttribute('aria-label', b.title + ' by ' + b.author + ', ' + b.thickness.toFixed(2) + ' inches thick');
+        spine.style.height = (b.height * scale) + 'px';
+        spine.style.background = colorFor(b.genre);
+        spine.title = b.title + ' — ' + b.author + (b.height > shelfH ? ' (taller than the shelf)' : '');
+        spine.setAttribute('aria-label', b.title + ' by ' + b.author + ', ' + b.thickness.toFixed(2) + ' inches thick' +
+          (b.height > shelfH ? ', taller than the shelf clearance' : ''));
         const label = document.createElement('span');
         label.className = 'label';
         label.textContent = b.title;
@@ -927,7 +1387,7 @@
         booksRow.appendChild(spine);
       });
 
-      const remaining = SHELF_WIDTH_IN - shelf.used;
+      const remaining = shelfW - shelf.used;
       if (remaining > 0.15){
         const gap = document.createElement('div');
         gap.className = 'gap-slot';
@@ -947,21 +1407,21 @@
     renderSpineActiveStates();
 
     // ---- render catalog cards ----
-    const grid = document.getElementById('cardsGrid');
+    const grid = $('cardsGrid');
     grid.innerHTML = '';
-    let lastGroupWasFictional = null;
+    let lastGroup;
+    const primaryIsSetting = sortChain.length && sortChain[0].id === 'setting';
     arr.forEach((b, i) => {
-      if (currentSort === 'setting'){
-        const isFictional = b.settingYear === null;
-        if (lastGroupWasFictional === null || isFictional !== lastGroupWasFictional){
-          const gl = document.createElement('div');
-          gl.className = 'group-label';
-          gl.style.gridColumn = '1 / -1';
-          gl.textContent = isFictional ? 'NO SINGLE DATE — INVENTED WORLDS OR SWEEPING TIMEFRAMES' : 'DATED SETTINGS';
-          grid.appendChild(gl);
-          lastGroupWasFictional = isFictional;
-        }
+      const g = gk ? gk(b) : (primaryIsSetting ? (b.settingYear === null ? 'undated' : 'dated') : null);
+      if (g !== null && g !== lastGroup){
+        const gl = document.createElement('div');
+        gl.className = 'group-label';
+        gl.style.gridColumn = '1 / -1';
+        gl.textContent = gk ? g.toUpperCase()
+          : (g === 'undated' ? 'NO SINGLE DATE — INVENTED WORLDS OR SWEEPING TIMEFRAMES' : 'DATED SETTINGS');
+        grid.appendChild(gl);
       }
+      lastGroup = g;
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML =
@@ -974,13 +1434,21 @@
           '<span>Pages</span><b>' + b.pages + '</b>' +
           '<span>Thickness</span><b>' + b.thickness.toFixed(2) + ' in</b>' +
         '</div>' +
-        '<span class="genre-tag" style="background:' + GENRE_COLORS[b.genre] + '">' + esc(b.genre) + '</span>';
+        '<span class="genre-tag" style="background:' + colorFor(b.genre) + '">' + esc(b.genre) + '</span>';
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'cardx';
+      x.textContent = '×';
+      x.title = 'Remove this book';
+      x.setAttribute('aria-label', 'Remove ' + b.title);
+      x.addEventListener('click', e => { e.stopPropagation(); removeBook(b.id); });
+      card.appendChild(x);
       card.addEventListener('click', () => showDetail(b));
       grid.appendChild(card);
     });
   }
 
-  buildLegend();
+  buildControls();
   render();
 
   let resizeTimer;

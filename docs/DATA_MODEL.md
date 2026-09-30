@@ -16,6 +16,7 @@ Each entry in the `books` array (in `src/index.html`, inside the `<script>` bloc
   genre: "Classic Fiction",   // must match a key in GENRE_COLORS, or add a new one there too
   settingYear: 1922,          // number, or null if the book has no single setting year
   settingLabel: "1922"        // display string shown on cards — free text, user-editable in the UI
+  // optional: dimSource: "Open Library" | "entered by hand" | ...  (where thickness came from)
 }
 ```
 
@@ -99,3 +100,8 @@ Current map:
 ### History of changes to this dataset
 
 Five fiction titles from the original draft were swapped out for nonfiction on request: *The Alchemist*, *Gone Girl*, *Life of Pi*, *The Girl with the Dragon Tattoo*, and *Lord of the Flies* were removed (mostly to reduce redundancy with other thrillers/classics already present); *Sapiens*, *The Diary of a Young Girl*, *In Cold Blood*, *Unbroken*, and *A Brief History of Time* were added in their place, bringing the nonfiction count to 8 of 25 (including *Educated*, which was in the original set).
+
+
+## Custom genres
+
+Genres added through the UI get the next color from `EXTRA_COLORS` in `src/index.html` (persisted in `customColors`), falling back to a hashed HSL color when those run out.

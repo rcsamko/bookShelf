@@ -33,7 +33,7 @@ Promotion is one-directional: merge `dev` into `test`, then `test` into `prod`. 
 
 - **Vanilla HTML/CSS/JS only.** No React, no build tooling, no npm dependencies. This was a deliberate choice to keep it a single portable file.
 - **Self-contained file.** All CSS and JS are inlined in `src/index.html`. The only allowed external calls are the two Google Fonts stylesheet links and the on-demand book-dimension lookups (Open Library, then Google Books) made from `lookupDimensions()` when the user clicks "Look up real dimensions".
-- **Persistence uses `localStorage`** (key `shelf24.v1`: the full book list, current sort, reversed flag), saved on every `render()` and loaded at startup by `loadState()`. All reads/writes are in try/catch, and saved data is validated (`validBook`) before use; corrupt or missing data falls back to the built-in dataset. A footer link resets to defaults. If you change the book schema, bump the key version or migrate.
+- **Persistence uses `localStorage`** (key `shelf24.v1`: book list, `shelfW`/`shelfH`, `groupBy`, `sortChain`, `nextId`, `customColors`; older saves with `sort`/`reversed` are migrated), saved on every `render()` and loaded at startup by `loadState()`. All reads/writes are in try/catch, and saved data is validated (`validBook`) before use; corrupt or missing data falls back to the built-in dataset. A footer link resets to defaults. If you change the book schema, bump the key version or migrate.
 - **Responsive, mobile-first.** The shelf visualization computes its px-per-inch scale from the actual rendered container width (see `render()` in the `<script>` block), so it works from ~320px phone screens up through desktop. Preserve this approach rather than hardcoding pixel widths.
 - **Light/dark mode via CSS variables**, keyed off `prefers-color-scheme` and an optional `data-theme` attribute override. Any new UI should use the existing CSS custom properties (`--paper`, `--ink`, `--brass`, `--wood-*`, `--card-bg`, etc.) rather than hardcoded colors.
 - **Safe-area aware**: `env(safe-area-inset-*)` padding is already set up on `:root`; keep this if you add fixed/sticky elements.
@@ -48,7 +48,9 @@ Each book is a plain JS object with: `id`, `title`, `author`, `pubYear`, `pages`
 
 ## Core logic (all in the `<script>` block of `src/index.html`)
 
-- `packBooks(arr)` — greedy bin-packing: walks the (sorted) array in order and starts a new shelf whenever the next book would exceed `SHELF_WIDTH_IN` (currently `24`). This is intentionally *not* an optimal packing algorithm — it preserves the chosen sort order on the shelf, which is the point of the tool (a real person shelves books in a chosen order, not in whatever order minimizes empty space).
+- `packBooks(arr, width, keyFn)` — greedy bin-packing: walks the (sorted) array in order and starts a new shelf whenever the next book would exceed the user-set `shelfW` (default 24") or, when grouping, the group changes. This is intentionally *not* an optimal packing algorithm — it preserves the chosen sort order on the shelf, which is the point of the tool (a real person shelves books in a chosen order, not in whatever order minimizes empty space).
+- `sortChain` — ordered list of `{id, dir}`; users drag "tags" (pointer events, plus keyboard) to build a nested sort: tag 1 first, ties broken by tag 2, etc. `compareBooks` applies it. Each `SORTS` comparator must look at ONE field only (no built-in tie-breaks) so chaining works. `groupBy` (none / genre "subject" / author) sorts by group first and puts each group on its own shelf.
+- `shelfH` is a clearance height: taller books are flagged (`toolong`), not rejected. Add books with the form (`addBook`, id from `nextId`, never reused); remove via detail panel or card ×. New genres get the next color in `EXTRA_COLORS`.
 - `SORTS` — array of `{id, label, fn}` comparator definitions. Title sort ignores leading "The/A/An"; author sort uses last name. Setting sort pushes `settingYear === null` to the end and groups them under a "no single date" label in the catalog list.
 - `render()` — re-sorts, re-packs, and redraws both the shelf visualization and the catalog card grid. Called on sort-button click, reverse toggle, book edit save, and window resize (debounced).
 - `showDetail(book)` / `saveSetting()` — the click-to-view / edit-in-place flow for a single book's setting year and label.
@@ -58,9 +60,9 @@ Each book is a plain JS object with: `id`, `title`, `author`, `pubYear`, `pages`
 Roughly in order of likely value:
 
 1. ~~**Persistence.**~~ Done in `dev`.
-2. **Add/remove/reorder books via UI** rather than editing the hardcoded array — a simple form (title, author, pages or thickness, genre, setting year/label) plus a delete button per catalog card.
-3. **Configurable shelf width and number of shelves** (currently hardcoded to 24"; a real bookcase might have several shelves of different widths).
-4. ~~**Real dimensions lookup**~~ Done in `dev` for existing books (detail-panel button; Open Library editions' `physical_dimensions`, then Google Books, then a page-count estimate). Still open: lookup by title/ISBN when adding a new book. Original note: optionally look up actual trim size / page count via a books API (e.g. Open Library or Google Books) instead of the hand-estimated thickness formula, when the user adds a new book by title/ISBN.
+2. ~~**Add/remove books via UI**~~ Done in `dev`.
+3. ~~Configurable shelf width and height~~ Done in `dev`. Still open: a fixed number of shelves / different widths per shelf.
+4. ~~**Real dimensions lookup**~~ Done in `dev` for existing books (detail-panel button; Open Library editions' `physical_dimensions`, then Google Books, then a page-count estimate). Also available in the add-book form (title/author; no ISBN yet). Original note: optionally look up actual trim size / page count via a books API (e.g. Open Library or Google Books) instead of the hand-estimated thickness formula, when the user adds a new book by title/ISBN.
 5. **Drag-to-reorder** on the shelf itself as an alternative to picking a sort — lets someone do a custom arrangement and see it "count" against the 24".
 6. **Export/share** — turn the current shelf layout into a shareable image or printable list.
 7. **Unit tests** for `packBooks` and the sort comparators, since those are the parts most likely to silently break during future edits.
